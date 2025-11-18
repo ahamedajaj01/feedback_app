@@ -5,7 +5,7 @@ Built with Django, MySQL, and Bootstrap 5.
 
 ---
 ## 🌐 Live Demo
-feedbackapp-production-d50a.up.railway.app
+https://feedbackapp-production-d50a.up.railway.app
 
 ## 🚀 Features
 
