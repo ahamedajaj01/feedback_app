@@ -1,157 +1,156 @@
-📝 Feedback Application — Django Project
+# 📝 Feedback Application (Django + MySQL)
 
-A simple, clean, beginner-friendly Django web application where users can register, log in, submit feedback, view their own feedback, and admins can manage all feedback.
+A lightweight Django application for collecting user feedback with authentication, role-based access, and an admin dashboard.  
+Built with Django, MySQL, and Bootstrap 5.
 
-This app demonstrates user authentication, role-based access, CRUD operations, and clean Bootstrap UI.
+---
 
-🚀 Features
-👤 User Features
+## 🚀 Features
 
-Register with username, email, password
+### **User**
+- Register / Login / Logout
+- Submit feedback (name, email, message)
+- View only their own feedback
+- Edit or delete their own feedback
+- Clean Bootstrap UI
 
-Login / Logout
+### **Admin**
+- Access Django admin panel
+- View all submitted feedback
+- Cannot access user-only pages
+- Automatic redirection to admin feedback list
 
-Submit Feedback
+---
 
-Name
+## 🛠 Tech Stack
+- **Python**
+- **Django**
+- **MySQL**
+- **Bootstrap 5**
 
-Email
+---
 
-Message
+## 📂 Project Structure (important parts)
+```
+project/
+│── feedback/                # Django project
+│── feedback_app/            # Main app
+│── templates/               # HTML templates
+│── static/                  # Static assets (CSS/JS/images)
+│── .gitignore
+│── prod_run.bat             # (safe — no secrets)
+│── requirements.txt
+```
 
-View My Feedback
+---
 
-Each user can only see feedback submitted by themselves
+## 🔧 Installation & Setup (Development)
 
-Edit My Feedback
-
-Delete My Feedback
-
-Friendly UI using Bootstrap
-
-🔐 Admin Features
-
-Admin login (Django admin panel)
-
-Admin/staff automatically redirected to Feedback List Page (not homepage)
-
-View all user feedback in admin dashboard page
-
-Admin cannot access user pages like My Feedback
-
-User cannot access admin pages
-
-🏗 Technology Stack
-
-Python 5.3
-
-Django (Authentication, ORM, Views)
-
-MySQL database
-
-Bootstrap 5 (UI styling)
-
-
-📌 Key Functional Logic
-🗄 Feedback Model
-Stores:
-
-Name
-
-Email
-
-Message
-
-Created Time
-
-User who submitted
-
-📝 Feedback Submission
-Normal users can submit feedback
-
-Form validates message
-
-After submit, user stays on same page with success message
-
-👀 My Feedback Page
-Shows feedback only from logged-in user
-
-Edit + Delete buttons available
-
-Protected: admin cannot access
-
-🛠 Edit Feedback
-User can only edit their own feedback
-
-Edit form pre-fills existing values
-
-Basic security checks ensure ownership
-
-❌ Delete Feedback
-POST-based delete
-
-Only owner can delete
-
-Confirmation optional
-
-🔒 Authentication & Routing
-Registration: free for all
-
-Login: redirects based on role
-
-Admin visiting homepage → redirected to admin feedback list
-
-Normal user visiting admin URL → blocked/redirected
-
-Login/Register pages hidden for logged-in users
-
-🔧 Installation & Setup
-1. Clone the project
+### 1. Clone the repository
+```bash
 git clone <your-repo-url>
 cd project
+```
 
-2. Create virtual environment
+### 2. Create virtual environment
+```bash
 python -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
+# Windows:
+venv\Scripts\activate
+# Linux/macOS:
+source venv/bin/activate
+```
 
-3. Install dependencies
-pip install django
+### 3. Install dependencies
+```bash
+pip install -r requirements.txt
+```
 
-4. Migrate database
+### 4. Configure environment variables  
+Create a `.env` file (NOT committed to git):
+
+```
+MYSQL_DATABASE=feedback_db
+MYSQL_USER=root
+MYSQL_PASSWORD=your_db_password
+MYSQL_HOST=127.0.0.1
+MYSQL_PORT=3306
+DJANGO_SECRET_KEY=your-secret-key
+DJANGO_DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+```
+
+### 5. Apply migrations
+```bash
 python manage.py migrate
+```
 
-5. Create superuser (admin)
+### 6. Create admin user
+```bash
 python manage.py createsuperuser
+```
 
-6. Run the server
+### 7. Run development server
+```bash
 python manage.py runserver
+```
 
-7. Access the app
+App:  
+http://127.0.0.1:8000/  
+Admin panel:  
+http://127.0.0.1:8000/admin/
 
-Website → http://127.0.0.1:8000/
+---
 
-Admin panel → http://127.0.0.1:8000/admin/
+## 📦 Production Notes (Important)
 
-🖼 UI Highlights
+This project uses **two settings files**:
 
-Clean Bootstrap layout
+- `settings.py` (development)
+- `prod_settings.py` (production)
 
-Centered login / register cards
+To run with production settings on the server:
 
-Alert messages with closable (X) button
+```
+python manage.py runserver 0.0.0.0:8000 --settings=feedback.prod_settings
+```
 
-Neatly formatted feedback cards
+### Production `.env` example:
+```env
+DJANGO_SECRET_KEY=your-strong-secret
+DJANGO_DEBUG=False
+ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
 
-Edit/Delete buttons right aligned
+MYSQL_DATABASE=feedback_db
+MYSQL_USER=prod_user
+MYSQL_PASSWORD=prod_password
 
-✔ Future Enhancements (optional)
+SECURE_SSL_REDIRECT=True
+SESSION_COOKIE_SECURE=True
+CSRF_COOKIE_SECURE=True
+```
 
-Add pagination to admin feedback list
+⚠️ **Do NOT commit your `.env` file.**
 
-Add search/filter system for admin
+---
 
-Add email notifications for new feedback
+## 🗂 Database Model (Summary)
+The `Feedback` model stores:
+- name  
+- email  
+- message  
+- created timestamp  
+- user (ForeignKey)
 
-Switch to Django class-based views
+---
 
-Add profile page for users
+## ✔ Future Enhancements
+- Admin search + filters
+- Pagination
+- Email notifications
+- Class-based views
+- User profile page
+
+---
+
+
