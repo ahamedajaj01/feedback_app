@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{% for fb in feedback %}
+    <div class="card mb-3 p-3">
+        <strong>{{ fb.name }}</strong> ({{ fb.email }})<br>
+        <p>{{ fb.message }}</p>
+        <small class="text-muted">{{ fb.created_at }}</small>
+
+         <!-- Buttons aligned right -->
+    <div class="d-flex justify-content-end gap-2 mt-3">
+        <a class="btn btn-warning btn-sm" href="{% url 'edit_feedback' fb.pk %}">Edit</a>
+        <a class="btn btn-danger btn-sm" href="{% url 'delete_feedback' fb.pk %}">Delete</a>
+    </div>
+
+    </div>
+{% empty %}
+    <p>No feedback from users yet.</p>
+{% endfor %}
+
+{% endblock content %}

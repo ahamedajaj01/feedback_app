@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container" style="max-width:600px;">
+  <h2 class="mb-3">Edit Feedback</h2>
+
+
+  <form method="post" >
+          <!-- add {% csrf_token %} for Django -->
+           {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" name="name" value="{{feedback.name}}" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email (optional)</label>
+            <input type="email" class="form-control" name="email" value="{{feedback.email}}">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Message</label>
+            <textarea class="form-control" name="message" rows="4"  required>{{feedback.message}}</textarea>
+          </div>
+
+   <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <a href="{% url 'my_feedback' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+        </form>
+
+</div>
+{% endblock %}

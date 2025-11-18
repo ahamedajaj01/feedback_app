@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for feedback in feedbacks %}
+<div class="card mb-3 p-3">
+        <strong>{{ feedback.name }}</strong> ({{ feedback.email }})<br>
+        <p>{{ feedback.message }}</p>
+        <small class="text-muted">{{ feedback.created_at }}</small>
+    </div>
+{% empty %}
+    <p>No feedback from users yet.</p>{% endfor %}
+{% endblock content %}
