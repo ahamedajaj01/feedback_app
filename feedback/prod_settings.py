@@ -47,8 +47,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    # Uncomment/install whitenoise if you want Django to serve static files in simple deployments:
-    # 'whitenoise.middleware.WhiteNoiseMiddleware',
+    # WhiteNoise serves static files efficiently in production
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -115,9 +115,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']            # dev static sources
 STATIC_ROOT = BASE_DIR / 'staticfiles'              # collectstatic target (production)
+
 # If you use WhiteNoise (recommended for simple deployments), enable it in MIDDLEWARE above
-# and optionally set:
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Use WhiteNoise for static files in production
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Media (uploaded files)
 MEDIA_URL = '/media/'
