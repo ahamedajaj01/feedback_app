@@ -2,23 +2,39 @@ from django import forms
 from django.contrib.auth.models import User
 from .models import Feedback
 
-class Registration(forms.ModelForm):
+# A form that is linked to the User model
+class Registration(forms.ModelForm): 
+    # Field for entering the password (hidden input box)
     password = forms.CharField(widget=forms.PasswordInput)
+    
+    # Second password field to confirm the first one
     confirm_password = forms.CharField(widget=forms.PasswordInput)
 
     class Meta:
+        # This form uses the built-in User model
         model = User
-        fields = ['username','email','password']
+        
+        # These are the User model fields that will appear on the form
+        fields = ['username', 'email', 'password']
     
+    # This method checks the entire form after all fields are entered
     def clean(self):
+        # First let Django clean the data normally
         cleaned_data = super().clean()
+
+        # Get the password the user typed
         password = cleaned_data.get('password')
+        
+        # Get the confirm password value
         confirm = cleaned_data.get('confirm_password')
 
+        # If the two passwords are different, stop the form with an error
         if password != confirm:
             raise forms.ValidationError("Passwords do not match")
         
+        # Return all cleaned values back
         return cleaned_data
+
 
 class LoginForm(forms.Form):
     username = forms.CharField()

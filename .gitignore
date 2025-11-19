@@ -84,4 +84,5 @@ out/
 
 # Local dev scripts you want to ignore (enable if needed)
 # prod_run.bat
+dev_run.bat
 # .envrc
