@@ -1,6 +1,9 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .models import Feedback
+
+User = get_user_model()
 
 # A form that is linked to the User model
 class Registration(forms.ModelForm): 
@@ -17,6 +20,14 @@ class Registration(forms.ModelForm):
         # These are the User model fields that will appear on the form
         fields = ['username', 'email', 'password']
     
+    def clean_email(self):
+        """Reject registration if the email is already used (case-insensitive)."""
+        email = (self.cleaned_data.get('email') or '').strip()
+        if email and User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError("A user with that email already exists.")
+        return email
+
+
     # This method checks the entire form after all fields are entered
     def clean(self):
         # First let Django clean the data normally
