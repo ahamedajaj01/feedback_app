@@ -10,7 +10,7 @@ Feedback - Homepage
     <p class="lead mt-3 mb-4">
       Help us improve by sharing your experience, ideas, and suggestions.
     </p>
-    <a href="{% url 'feedback_form' %}" class="btn btn-light btn-lg px-4">Share Feedback</a>
+    <a href="{% if user.is_authenticated %}{% url 'feedback_form' %}{% else %}{% url 'login' %}{% endif %}" class="btn btn-light btn-lg px-4">Share Feedback</a>
   </div>
 </section>
 
