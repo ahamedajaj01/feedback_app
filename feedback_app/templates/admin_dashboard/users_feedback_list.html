@@ -1,0 +1,52 @@
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row mb-3">
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body text-center">
+        <h6 class="mb-1">Total Feedback</h6>
+        <h3 class="mb-0">{{ feedbacks.count }}</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-auto">
+    <input type="text" name="q" class="form-control" placeholder="Search name, email, message" value="{{ request.GET.q }}">
+  </div>
+  <div class="col-auto">
+    <select name="date" class="form-select">
+      <option value="">All</option>
+      <option value="today" {% if request.GET.date == 'today' %}selected{% endif %}>Today</option>
+      <option value="week" {% if request.GET.date == 'week' %}selected{% endif %}>This week</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary">Filter</button>
+  </div>
+</form>
+
+{% for feedback in feedbacks %}
+  <div class="card mb-3 shadow-sm">
+    <div class="card-body">
+      <div class="d-flex justify-content-between">
+        <div>
+          <strong>{{ feedback.name }}</strong>
+          <div class="text-muted small">{{ feedback.email }}</div>
+        </div>
+        <div class="text-end small text-muted">{{ feedback.created_at }}</div>
+      </div>
+
+      <p class="mt-2 mb-1">{{ feedback.message }}</p>
+
+      <div class="mt-2">
+        <a href="#" class="btn btn-sm btn-outline-secondary">Reply</a>
+        <a href="{% url 'delete_feedback' feedback.id %}?next={{ 'admin_dashboard' }}" class="btn btn-sm btn-outline-danger">Delete</a>
+
+      </div>
+    </div>
+  </div>
+{% empty %}
+  <p>No feedback yet.</p>
+{% endfor %}

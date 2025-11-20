@@ -5,9 +5,10 @@ Feedback - delete_feedback
 {% block content %}
 <form method="post">
     {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
     <p>Are you sure you want to delete this feedback?</p>
     <button class="btn btn-danger" type="submit">Delete</button>
-    <a class="btn btn-secondary" href="{% url 'my_feedback' %}">Cancel</a>
+    <a class="btn btn-secondary" href="{% url next %}">Cancel</a>
 </form>
 
 {% endblock content %}

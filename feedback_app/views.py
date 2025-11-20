@@ -10,7 +10,7 @@ from django.contrib import messages
 def homepage(request):
      # If admin or staff → keep them in admin area
     if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
-           return redirect("admin_feedback_list")  
+           return redirect("admin_dashboard")  
      # Normal users can see homepage
     return render(request,"homepage.html")
 
@@ -18,7 +18,7 @@ def user_registration(request):
     # If user already logged in → stop them
     if request.user.is_authenticated:
          if request.user.is_staff or request.user.is_superuser:
-                       return redirect('admin_feedback_list')
+                       return redirect('admin_dashboard')
          return redirect('homepage')
          
     if request.method == "POST":
@@ -39,7 +39,7 @@ def login(request):
      # If user already logged in → stop them
     if request.user.is_authenticated:
          if request.user.is_staff or request.user.is_superuser:
-                       return redirect('admin_feedback_list')
+                       return redirect('admin_dashboard')
     
          return redirect("homepage")
     
@@ -59,7 +59,7 @@ def login(request):
 
                  # If the user is staff or superuser, send to the admin feedback page
                 if user.is_staff or user.is_superuser:
-                    return redirect('admin_feedback_list')
+                    return redirect('admin_dashboard')
                  # Otherwise send regular users to homepage
                 return redirect('homepage')
             else:
@@ -117,20 +117,21 @@ def submit_feedback(request):
     # just send them back to the form page.
     return redirect('feedback_form')
 
-# list feedback list for admin
+# admin dashboard
 @login_required
-def admin_feedback_list(request):
+def admin_dashboard(request):
     # Only allow admin users
     if not (request.user.is_staff or request.user.is_superuser):
         return redirect('homepage')
     feedbacks = Feedback.objects.all()
-    return render(request,"admin_feedback_list.html",{"feedbacks":feedbacks})
+    return render(request,"admin_dashboard/dashboard.html",{"feedbacks":feedbacks})
+
 
 @login_required
 def my_feedback(request):
       # Block admin & staff accounts
     if request.user.is_staff or request.user.is_superuser:
-        return redirect("admin_feedback_list")  # or 'homepage' if you prefer
+        return redirect("admin_dashboard")  # or 'homepage' if you prefer
     
     # Only normal users reach this part
     feedback = Feedback.objects.filter(user=request.user).order_by('-created_at')
@@ -164,14 +165,27 @@ def edit_feedback(request,pk):
 def delete_feedback(request,pk):
      feedback = get_object_or_404(Feedback,pk=pk)
 
-     # Security check: only the owner (user) can delete their feedback
-     if feedback.user != request.user:
-       return redirect("my_feedback")
+    # Determine the default redirect target
+    # - if the current user is staff (admin), default to admin dashboard
+    # - otherwise default to the user's feedback list
+     default_redirect = 'admin_dashboard' if request.user.is_staff else 'my_feedback'
+
+     # Find where to redirect after delete (check POST, then GET)
+     next_url_name = request.POST.get('next') or request.GET.get('next') or default_redirect
+
+     # Security check:
+    # - owner can delete
+    # - staff can delete any feedback
+     if not (request.user.is_staff or (feedback.user is not None and feedback.user == request.user)):
+        # unauthorized: redirect back to safe place
+        return redirect(default_redirect)
 
      if request.method == "POST":
           feedback.delete()
-          return redirect('my_feedback')
-     return render(request, "confirm_delete.html", {"feedback": feedback})
+          return redirect(next_url_name)
+     
+     # show confirmation page; pass the 'next' so the form can send it back
+     return render(request, "confirm_delete.html", {"feedback": feedback, "next":next_url_name})
 
 
          
