@@ -3,8 +3,11 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from .forms import Registration,LoginForm, FeedbackForm
-from .models import Feedback
+from .models import Feedback, FeedbackReply
 from django.contrib import messages
+from django.db.models import Q
+from django.utils import timezone
+from datetime import timedelta
 
 # Create your views here.
 def homepage(request):
@@ -13,6 +16,7 @@ def homepage(request):
            return redirect("admin_dashboard")  
      # Normal users can see homepage
     return render(request,"homepage.html")
+
 
 def user_registration(request):
     # If user already logged in → stop them
@@ -34,6 +38,7 @@ def user_registration(request):
         form = Registration()
 
     return render(request,"registration/registration.html",{"form":form})
+
 
 def login(request):
      # If user already logged in → stop them
@@ -71,9 +76,11 @@ def login(request):
     
     return render(request,"login.html",{"form":form})
 
+
 def logout(request):
     auth_logout(request)
     return redirect('login')
+
 
 @login_required
 def feedback_form(request):
@@ -117,16 +124,72 @@ def submit_feedback(request):
     # just send them back to the form page.
     return redirect('feedback_form')
 
+
 # admin dashboard
 @login_required
 def admin_dashboard(request):
     # Only allow admin users
     if not (request.user.is_staff or request.user.is_superuser):
         return redirect('homepage')
+    
+    q= request.GET.get('q','').strip()
+    date_filter= request.GET.get('date','').strip()
     feedbacks = Feedback.objects.all()
-    return render(request,"admin_dashboard/dashboard.html",{"feedbacks":feedbacks})
+
+    # text search
+    if q:
+         feedbacks=feedbacks.filter(Q(name__icontains=q)|Q(email__icontains=q)|Q(message__icontains=q))
+
+    # date filter
+    now = timezone.now()
+    local_now = timezone.localtime(now) # convert to current timezone
+    start = local_now.replace(hour=0,minute=0,second=0,microsecond=0)
+    end = start+timedelta(days=1)
+    if date_filter=='today':
+         today = now.date()
+         feedbacks=feedbacks.filter(created_at__gte=start,created_at__lt=end)
+    elif date_filter=='week':
+         since = now - timedelta(days=7)
+         feedbacks = feedbacks.filter(created_at__gte=since)
+    feedbacks=feedbacks.order_by('-created_at')
+
+    return render(request,"admin_dashboard/dashboard.html",{
+         "feedbacks":feedbacks,
+         "request":request,   # so template can read request.GET.q / date
+           })
 
 
+# admin feedback reply
+def admin_feedback_reply(request,pk):
+     # Allow only staff/admin users to reply
+     if not (request.user.is_staff or request.user.is_superuser):
+          return redirect('homepage')
+     
+     # Get the feedback or show 404 if not found
+     feedback = get_object_or_404(Feedback,pk=pk)
+    
+    # When form is submitted (POST)
+     if request.method == "POST":  
+        # send reply
+        message = request.POST.get('message','').strip()
+    
+    # If message is empty, reload page ( or you can add error later)
+        if not message:
+            return redirect('admin_dashboard')
+        
+        # Save reply to database
+        FeedbackReply.objects.create(
+             feedback=feedback,
+             admin=request.user,
+             message=message,
+        )
+         # After saving, go back to dashboard or feedback list
+        return redirect('admin_dashboard')
+     
+     # If GET request (just visiting page), show a simple reply form
+     return render(request,"admin_dashboard/reply.html",{"feedback":feedback})
+
+    
 @login_required
 def my_feedback(request):
       # Block admin & staff accounts
@@ -136,6 +199,7 @@ def my_feedback(request):
     # Only normal users reach this part
     feedback = Feedback.objects.filter(user=request.user).order_by('-created_at')
     return render(request,"my_feedback.html",{"feedback":feedback})
+
 
 @login_required
 def edit_feedback(request,pk):
@@ -188,4 +252,3 @@ def delete_feedback(request,pk):
      return render(request, "confirm_delete.html", {"feedback": feedback, "next":next_url_name})
 
 
-         

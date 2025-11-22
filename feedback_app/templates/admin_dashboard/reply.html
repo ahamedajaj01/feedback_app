@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Reply to Feedback</h3>
+
+<p><strong>{{ feedback.name }}</strong> ({{ feedback.email }})</p>
+<p>{{ feedback.message }}</p>
+<hr>
+
+<form method="post">
+    {% csrf_token %}
+    <label>Write your reply:</label>
+    <textarea name="message" rows="5" class="form-control" required></textarea>
+
+    <button class="btn btn-primary mt-3">Send Reply</button>
+</form>
+
+
+{% endblock content %}
