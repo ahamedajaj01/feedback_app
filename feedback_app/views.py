@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView, FormView
 from django.contrib.auth.models import User
 from .forms import Registration,LoginForm, FeedbackForm
 from .models import Feedback, FeedbackReply
@@ -10,13 +11,17 @@ from django.utils import timezone
 from datetime import timedelta
 
 # Create your views here.
-def homepage(request):
-     # If admin or staff → keep them in admin area
-    if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
-           return redirect("admin_dashboard")  
-     # Normal users can see homepage
-    return render(request,"homepage.html")
+class HomePageView(TemplateView):
+     template_name = "homepage.html"
 
+     # This runs before any GET/POST handler.
+     def dispatch(self, request, *args, **kwargs):
+     # If admin or staff → keep them in admin area
+        if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+           return redirect("admin_dashboard")  
+        
+        # Otherwise continue normally (show homepage)
+        return super().dispatch(request,*args, **kwargs)
 
 def user_registration(request):
     # If user already logged in → stop them

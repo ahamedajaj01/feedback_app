@@ -14,3 +14,4 @@
 
 release: python manage.py migrate
 web: gunicorn yourproject.wsgi
+

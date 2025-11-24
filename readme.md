@@ -1,4 +1,4 @@
-# 📝 Feedback Application (Django + MySQL)
+# 📝 Django Feedback System with Admin Dashboard (Django + MySQL)
 
 A lightweight Django application for collecting user feedback with authentication, role-based access, and an admin dashboard where admin can see and manage every users feedback.  
 Built with Django, MySQL, and Bootstrap 5.

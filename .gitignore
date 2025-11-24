@@ -86,3 +86,6 @@ out/
 # prod_run.bat
 # dev_run.bat
 # .envrc
+
+#views file
+views copy.py
