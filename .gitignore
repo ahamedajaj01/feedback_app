@@ -11,8 +11,6 @@ env/
 .venv/*
 
 # Env / secrets
-.env
-.env.* 
 *.env
 
 # Django
@@ -41,7 +39,6 @@ assets/
 migrations/__pycache__/
 
 # IDE / editor
-.vscode/
 .idea/
 *.swp
 *~
@@ -89,3 +86,4 @@ out/
 
 #views file
 views copy.py
+config.bat

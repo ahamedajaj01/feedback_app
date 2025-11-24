@@ -47,10 +47,6 @@ class Registration(forms.ModelForm):
         return cleaned_data
 
 
-class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
-
 class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
